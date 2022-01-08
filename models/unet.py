@@ -1,10 +1,10 @@
 """
 # Standard UNet model
 """
-from keras.optimizers import Adam
-from keras.models import Input, Model
-from keras.layers.convolutional import UpSampling2D, Conv2D
-from keras.layers import MaxPooling2D, concatenate, Dropout 
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import UpSampling2D, Conv2D
+from tensorflow.keras.layers import Input, MaxPooling2D, concatenate, Dropout 
 
 
 def UNet_base(input_size = (256, 256, 3), no_of_class = 3):
@@ -49,7 +49,7 @@ def UNet_base(input_size = (256, 256, 3), no_of_class = 3):
     conv9 = Conv2D(3, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv9)
     conv10 = Conv2D(no_of_class, 3, padding = 'same', activation = 'sigmoid')(conv9)
 
-    model = Model(input = inputs, output = conv10)
+    model = Model(inputs, conv10)
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])    
     model.summary()
 
