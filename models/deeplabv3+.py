@@ -1,5 +1,7 @@
 """
-# Standard DeepLabv3+ Model
+Standard DeepLabv3+ Model
+This model is based on:
+https://keras.io/examples/vision/deeplabv3_plus/
 """
 import os
 import cv2
