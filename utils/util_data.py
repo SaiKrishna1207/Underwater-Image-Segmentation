@@ -1,6 +1,5 @@
 """
-# Data utility functions for training on the SUIM dataset
-# Paper: https://arxiv.org/pdf/2004.01241.pdf  
+# Utility functions to help with data augmentation
 """
 from __future__ import print_function
 from keras.preprocessing.image import ImageDataGenerator
@@ -10,7 +9,7 @@ import fnmatch
 import itertools as it
 
 """
-RGB color code and object categories:
+RGB color code and object classes:
 ------------------------------------
 000 BW: Background waterbody
 001 HD: Human divers
@@ -21,7 +20,7 @@ RGB color code and object categories:
 110 FV: Fish and vertebrates
 111 SR: Sand/sea-floor (& rocks)
 """
-def getRobotFishHumanReefWrecks(mask):
+def ifRobotHumanFishReefWreck(mask):
     # for categories: HD, RO, FV, WR, RI
     imw, imh = mask.shape[0], mask.shape[1]
     Human = np.zeros((imw, imh))
@@ -43,27 +42,6 @@ def getRobotFishHumanReefWrecks(mask):
                 Wreck[i, j] = 1  
             else: pass
     return np.stack((Robot, Fish, Human, Reef, Wreck), -1) 
-
-
-def getRobotFishHumanWrecks(mask):
-    # for categories: HD, RO, FV, WR
-    imw, imh = mask.shape[0], mask.shape[1]
-    Human = np.zeros((imw, imh))
-    Robot = np.zeros((imw, imh))
-    Fish = np.zeros((imw, imh))
-    Wreck = np.zeros((imw, imh))
-    for i in range(imw):
-        for j in range(imh):
-            if (mask[i,j,0]==0 and mask[i,j,1]==0 and mask[i,j,2]==1):
-                Human[i, j] = 1 
-            elif (mask[i,j,0]==1 and mask[i,j,1]==0 and mask[i,j,2]==0):
-                Robot[i, j] = 1  
-            elif (mask[i,j,0]==1 and mask[i,j,1]==1 and mask[i,j,2]==0):
-                Fish[i, j] = 1  
-            elif (mask[i,j,0]==0 and mask[i,j,1]==1 and mask[i,j,2]==1):
-                Wreck[i, j] = 1  
-            else: pass
-    return np.stack((Robot, Fish, Human, Wreck), -1) 
 
 
 def getSaliency(mask):
@@ -95,8 +73,7 @@ def processSUIMDataRFHW(img, mask, sal=False):
         if sal:
             m.append(getSaliency(mask[i]))
         else:
-            m.append(getRobotFishHumanReefWrecks(mask[i]))
-            #m.append(getRobotFishHumanWrecks(mask[i]))
+            m.append(ifRobotHumanFishReefWreck(mask[i]))
     m = np.array(m)
     return (img, m)
 

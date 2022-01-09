@@ -50,7 +50,7 @@ def UNet_base(input_size = (256, 256, 3), no_of_class = 3):
     conv10 = Conv2D(no_of_class, 3, padding = 'same', activation = 'sigmoid')(conv9)
 
     model = Model(inputs, conv10)
-    model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])    
+    model.compile(optimizer = Adam(learning_rate = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])    
     model.summary()
 
 

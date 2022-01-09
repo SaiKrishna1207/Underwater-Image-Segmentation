@@ -5,22 +5,27 @@ from __future__ import print_function, division
 import os
 from os.path import join, exists
 from keras import callbacks
-# local libs
+
 from models.unet import UNet_base
 from utils.util_data import trainDataGenerator
+from processing.preprocessing import contrast_enhancement_clahe
 
-## dataset directory
+# Preprocessing - Perform contrast enhancement
+img_dir = "./data/train_val/images/"
+# contrast_enhancement_clahe(img_dir)
+
+## Dataset directory
 dataset_name = "suim"
-train_dir = "./data/train_val"
+train_dir = "./data/train_val/"
 
-## checkpoint directory
+## Checkpoint directory
 ckpt_dir = "ckpt/"
 im_res_ = (320, 240, 3)
 ckpt_name = "unet_rgb.hdf5"
 model_ckpt_name = join(ckpt_dir, ckpt_name)
 if not exists(ckpt_dir): os.makedirs(ckpt_dir)
 
-## initialize model
+## Initialize model
 model = UNet_base(input_size=(im_res_[1], im_res_[0], 3), no_of_class=5)
 print (model.summary())
 ## load saved model
@@ -45,7 +50,7 @@ model_checkpoint = callbacks.ModelCheckpoint(model_ckpt_name,
                                    save_weights_only = True,
                                    save_best_only = True)
 
-# data augmentation
+# Data augmentation
 train_gen = trainDataGenerator(batch_size, # batch_size 
                               train_dir,# train-data dir
                               "images", # image_folder 
@@ -55,7 +60,7 @@ train_gen = trainDataGenerator(batch_size, # batch_size
                               mask_color_mode="rgb",
                               target_size = (im_res_[1], im_res_[0]))
 
-## fit model
+## Fit model
 model.fit(train_gen, 
           steps_per_epoch = 5000,
           epochs = num_epochs,
