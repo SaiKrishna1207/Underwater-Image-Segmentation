@@ -27,7 +27,7 @@ if not exists(RI_dir): os.makedirs(RI_dir)
 
 # input/output shapes
 im_res_ = (320, 240, 3)
-ckpt_name = "unet_rgb5.hdf5"
+ckpt_name = "unet_rgb.hdf5"
 model = UNet_base(input_size=(im_res_[1], im_res_[0], 3), no_of_class=5)
 print (model.summary())
 model.load_weights(join("./ckpt/", ckpt_name))

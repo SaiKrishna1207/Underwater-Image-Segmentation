@@ -7,12 +7,12 @@ from os.path import join, exists
 from keras import callbacks
 
 from models.unet import UNet_base
-from utils.util_data import trainDataGenerator
+from utils.util_data import trainDataGenerator, data_augmentation_example
 from preprocessing import contrast_enhancement_clahe
 
 # Preprocessing - Perform contrast enhancement
 img_dir = "./data/train_val/images/"
-contrast_enhancement_clahe(img_dir)
+# contrast_enhancement_clahe(img_dir)
 
 # Dataset directory
 dataset_name = "suim"
@@ -27,42 +27,46 @@ if not exists(ckpt_dir): os.makedirs(ckpt_dir)
 
 # Initialize model
 model = UNet_base(input_size=(im_res_[1], im_res_[0], 3), no_of_class=5)
-print (model.summary())
+print(model.summary())
 
 # Load saved model
 # model.load_weights(join("ckpt/saved/", "***.hdf5"))
 
 """ Run options """
 batch_size = 2
-num_epochs = 1
+num_epochs = 50
 
 # Setting up the parameters for the data augmentation
 data_aug_args = dict(rotation_range=0.2,
-                    width_shift_range=0.05,
-                    height_shift_range=0.05,
-                    shear_range=0.05,
-                    zoom_range=0.05,
-                    horizontal_flip=True,
-                    fill_mode='nearest')
+                     width_shift_range=0.05,
+                     height_shift_range=0.05,
+                     shear_range=0.05,
+                     zoom_range=0.05,
+                     horizontal_flip=True,
+                     fill_mode='nearest')
 
 model_checkpoint = callbacks.ModelCheckpoint(model_ckpt_name,
-                                   monitor = 'loss',
-                                   verbose = 1, mode= 'auto',
-                                   save_weights_only = True,
-                                   save_best_only = True)
+                                             monitor='loss',
+                                             verbose=1, mode='auto',
+                                             save_weights_only=True,
+                                             save_best_only=True)
+
+# See preview of data augmentation
+data_augmentation_example(data_aug_args)
 
 # Data augmentation
-train_gen = trainDataGenerator(batch_size, # batch_size
-                              train_dir,# train-data dir
-                              "images", # image_folder
-                              "masks", # mask_folder
-                              data_aug_args, # aug_dict
-                              image_color_mode="rgb",
-                              mask_color_mode="rgb",
-                              target_size = (im_res_[1], im_res_[0]))
+train_gen = trainDataGenerator(batch_size,  # batch_size
+                               train_dir,  # train-data dir
+                               "images",  # image_folder
+                               "masks",  # mask_folder
+                               data_aug_args,  # aug_dict
+                               image_color_mode="rgb",
+                               mask_color_mode="rgb",
+                               target_size=(im_res_[1], im_res_[0]),
+                               sal=False)
 
 # Fit model
 model.fit(train_gen,
-          steps_per_epoch = 100,
-          epochs = num_epochs,
-          callbacks = [model_checkpoint])
+          steps_per_epoch=100,
+          epochs=num_epochs,
+          callbacks=[model_checkpoint])

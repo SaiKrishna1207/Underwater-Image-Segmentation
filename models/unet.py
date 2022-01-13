@@ -55,6 +55,6 @@ def UNet_base(input_size=(256, 256, 3), no_of_class=3):
 
     model = Model(inputs, conv10)
     model.compile(optimizer=Adam(learning_rate=1e-4), loss='binary_crossentropy', metrics=['accuracy'])
-    model.summary()
+    # model.summary()
 
     return model
