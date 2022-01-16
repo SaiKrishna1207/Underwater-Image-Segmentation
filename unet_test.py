@@ -27,11 +27,10 @@ if not exists(RI_dir): os.makedirs(RI_dir)
 
 # input/output shapes
 im_res_ = (320, 240, 3)
-ckpt_name = "unet_rgb.hdf5"
+ckpt_name = "unet_rgb5.hdf5"
 model = UNet_base(input_size=(im_res_[1], im_res_[0], 3), no_of_class=5)
-print (model.summary())
+print(model.summary())
 model.load_weights(join("./ckpt/", ckpt_name))
-
 
 im_h, im_w = im_res_[1], im_res_[0]
 
@@ -43,27 +42,31 @@ def test_generator():
     for p in getPaths(test_dir):
         # read and scale inputs
         img = Image.open(p).resize((im_w, im_h))
-        img = np.array(img)/255.
+        img = np.array(img) / 255.
         img = np.expand_dims(img, axis=0)
         # inference
         out_img = model.predict(img)
         # thresholding
-        out_img[out_img>0.5] = 1.
-        out_img[out_img<=0.5] = 0.
-        print ("tested: {0}".format(p))
+        out_img[out_img > 0.5] = 1.
+        out_img[out_img <= 0.5] = 0.
+        print(out_img.shape)
+        print("tested: {0}".format(p))
         # get filename
         img_name = ntpath.basename(p).split('.')[0] + '.bmp'
         # save individual output masks
-        ROs = np.reshape(out_img[0,:,:,0], (im_h, im_w))
-        FVs = np.reshape(out_img[0,:,:,1], (im_h, im_w))
-        HDs = np.reshape(out_img[0,:,:,2], (im_h, im_w))
-        RIs = np.reshape(out_img[0,:,:,3], (im_h, im_w))
-        WRs = np.reshape(out_img[0,:,:,4], (im_h, im_w))
-        Image.fromarray(np.uint8(ROs*255.)).save(RO_dir+img_name)
-        Image.fromarray(np.uint8(FVs*255.)).save(FB_dir+img_name)
-        Image.fromarray(np.uint8(HDs*255.)).save(HD_dir+img_name)
-        Image.fromarray(np.uint8(RIs*255.)).save(RI_dir+img_name)
-        Image.fromarray(np.uint8(WRs*255.)).save(WR_dir+img_name)
+        ROs = np.reshape(out_img[0, :, :, 0], (im_h, im_w))
+        FVs = np.reshape(out_img[0, :, :, 1], (im_h, im_w))
+        HDs = np.reshape(out_img[0, :, :, 2], (im_h, im_w))
+        RIs = np.reshape(out_img[0, :, :, 3], (im_h, im_w))
+        WRs = np.reshape(out_img[0, :, :, 4], (im_h, im_w))
+        # combined_img = [ROs, FVs, HDs, RIs, WRs]
+        # combined = np.stack(combined_img, axis=2)
+        Image.fromarray(np.uint8(ROs * 255.)).save(RO_dir + img_name)
+        Image.fromarray(np.uint8(FVs * 255.)).save(FB_dir + img_name)
+        Image.fromarray(np.uint8(HDs * 255.)).save(HD_dir + img_name)
+        Image.fromarray(np.uint8(RIs * 255.)).save(RI_dir + img_name)
+        Image.fromarray(np.uint8(WRs * 255.)).save(WR_dir + img_name)
+
 
 # test images
 test_generator()

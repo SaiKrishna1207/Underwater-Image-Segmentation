@@ -8,7 +8,6 @@ from keras import callbacks
 
 from models.unet import UNet_base
 from utils.util_data import trainDataGenerator, data_augmentation_example
-from preprocessing import contrast_enhancement_clahe
 
 # Preprocessing - Perform contrast enhancement
 img_dir = "./data/train_val/images/"
@@ -21,7 +20,7 @@ train_dir = "./data/train_val/"
 # Checkpoint directory
 ckpt_dir = "ckpt/"
 im_res_ = (320, 240, 3)
-ckpt_name = "unet_rgb.hdf5"
+ckpt_name = "unet_rgb5.hdf5"
 model_ckpt_name = join(ckpt_dir, ckpt_name)
 if not exists(ckpt_dir): os.makedirs(ckpt_dir)
 
@@ -62,8 +61,7 @@ train_gen = trainDataGenerator(batch_size,  # batch_size
                                data_aug_args,  # aug_dict
                                image_color_mode="rgb",
                                mask_color_mode="rgb",
-                               target_size=(im_res_[1], im_res_[0]),
-                               sal=False)
+                               target_size=(im_res_[1], im_res_[0]))
 
 # Fit model
 model.fit(train_gen,

@@ -114,7 +114,7 @@ def trainDataGenerator(batch_size, train_path, image_folder, mask_folder, aug_di
         save_to_dir=None,
         save_prefix="image",
         seed=1)
-    print(image_generator)
+
     # mask generator function for corresponding ground truth
     mask_datagen = ImageDataGenerator(**aug_dict)
     mask_generator = mask_datagen.flow_from_directory(
